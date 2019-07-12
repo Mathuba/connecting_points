@@ -1,6 +1,7 @@
 #Uses python3
 import sys
 import math
+import heapq
 
 def minimum_distance(x, y):
     result = 0.
@@ -9,9 +10,23 @@ def minimum_distance(x, y):
 
 
 if __name__ == '__main__':
-    input = sys.stdin.read()
-    data = list(map(int, input.split()))
-    n = data[0]
-    x = data[1::2]
-    y = data[2::2]
-    print("{0:.9f}".format(minimum_distance(x, y)))
+    is_file_input = False
+    if len(sys.argv) > 1:
+        is_file_input = True
+        f = open(sys.argv[1])
+        n = int(f.readline())
+    else:
+        n = int(input())
+    coords = [None for i in range(n)]                   # create empty list that will hold coordinate points
+
+    # populate coords with x, y points read in
+    for i in range(n):
+        if is_file_input:
+            x, y = map(int, f.readline().split())
+        else:
+            x, y = map(int, sys.stdin.readline().split())
+        coords[i] = (x, y)
+    if is_file_input:
+        f.close()
+    print("coords: ", coords)
+    # print("{0:.9f}".format(minimum_distance(x, y)))
