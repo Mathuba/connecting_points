@@ -43,32 +43,28 @@ def minimum_distance(coords, graph):
     result = 0.
 
     dist[start][0] = 0
-    parent[start] = coords[start]
+    parent[start] = start
     heapq.heappush(pq, dist[start])
 
     while pq:
         u_dist, u_pt = heapq.heappop(pq)
         u_ind = coords.index(u_pt)
-        if parent[u_ind] != coords[u_ind]:
+        print("parent u_ind: ", parent[u_ind])
+        print("u_ind: ", u_ind)
+        if parent[u_ind] != u_ind:
             mst.append(coords[u_ind])
             
         for neighbour_pt, edge_weight in graph[u_pt]:
             dist_standard = [edge_weight, neighbour_pt]
             neighbour_ind = coords.index(neighbour_pt)
 
-            print("This is what is in pq: ", pq)
-            print("dist_standard: ", dist_standard)
-            print("In mst: ", mst)
-            print("dist_standard in pq: ", dist_standard in pq)
-            print()
-            print("----------------------------------------------------")
-            if dist_standard in pq and dist[neighbour_ind][0] > edge_weight:
+            if neighbour_pt not in mst and dist[neighbour_ind][0] > edge_weight:
                 remove_dist = dist[neighbour_ind]
                 dist[neighbour_ind][0] = edge_weight
                 parent[neighbour_ind] = coords[u_ind]
-                pq.remove(remove_dist)
-                heapq.heapify(pq)
-                heapq.heappush(pq, dist[neighbour_ind])
+                # pq.remove(remove_dist)
+                # heapq.heapify(pq)
+                # heapq.heappush(pq, dist[neighbour_ind])
             elif parent[neighbour_ind] is None:
                 dist[neighbour_ind][0] = edge_weight
                 parent[neighbour_ind] = coords[u_ind]
