@@ -35,42 +35,32 @@ def add_edge(graph, pt1):
 
 
 def minimum_distance(coords, graph):
+    mst = [None for i in range(len(coords))]
+    result_vals = [None for i in range(len(coords))]
     pq = []
-    mst = []
     dist = [[INFINITY, pt] for pt in coords]
-    parent =[None for i in range(len(coords))]
+    parent = [None for i in range(len(coords))]
     start = 0
     result = 0.
-
     dist[start][0] = 0
     parent[start] = start
     heapq.heappush(pq, dist[start])
 
     while pq:
-        u_dist, u_pt = heapq.heappop(pq)
-        u_ind = coords.index(u_pt)
-        print("parent u_ind: ", parent[u_ind])
-        print("u_ind: ", u_ind)
-        if parent[u_ind] != u_ind:
-            mst.append(coords[u_ind])
-            
-        for neighbour_pt, edge_weight in graph[u_pt]:
-            dist_standard = [edge_weight, neighbour_pt]
-            neighbour_ind = coords.index(neighbour_pt)
-
-            if neighbour_pt not in mst and dist[neighbour_ind][0] > edge_weight:
-                remove_dist = dist[neighbour_ind]
-                dist[neighbour_ind][0] = edge_weight
-                parent[neighbour_ind] = coords[u_ind]
-                # pq.remove(remove_dist)
-                # heapq.heapify(pq)
-                # heapq.heappush(pq, dist[neighbour_ind])
-            elif parent[neighbour_ind] is None:
-                dist[neighbour_ind][0] = edge_weight
-                parent[neighbour_ind] = coords[u_ind]
-                heapq.heappush(pq, dist[neighbour_ind])
-                
-    return mst
+        mst_dist, mst_vertex = heapq.heappop(pq)
+        mst_ind = coords.index(mst_vertex)
+        
+        # put this value in our mst
+        mst[mst_ind] = mst_vertex
+        result_vals[mst_ind] = mst_dist
+        for neighbor_vert, edge_weight in graph[mst_vertex]:
+            neighbor_index = coords.index(neighbor_vert)
+            if mst[neighbor_index] != neighbor_vert and dist[neighbor_index][0] > edge_weight:
+                dist[neighbor_index][0] = edge_weight
+                parent[neighbor_index] = mst_ind
+                heapq.heappush(pq, dist[neighbor_index])
+    result = sum(result_vals)
+    return result
 
 
 if __name__ == '__main__':
@@ -96,5 +86,4 @@ if __name__ == '__main__':
     for my_pt in coords:
         add_edge(graph, my_pt)
 
-    # print("{0:.9f}".format(minimum_distance(coords, graph)))
-    print((minimum_distance(coords, graph)))
+    print("{0:.9f}".format(minimum_distance(coords, graph)))
