@@ -4,6 +4,9 @@ import math
 import heapq
 
 
+INFINITY = 9999.999999999
+
+
 def distance(p, q):
     """Return euclidean distance btween two points. """
     dist = ((p[0] - q[0])**2 + (p[1] - q[1])**2)
@@ -24,16 +27,54 @@ def add_edge(graph, pt1):
             edge_weight = distance(key, pt1)
             neighbour = [pt1, edge_weight]
             opp_neighbour = [key, edge_weight]
-            if opp_neighbour in graph[pt1]:
-                continue
-            else:
-                graph[key].append(neighbour)
+            # if opp_neighbour in graph[pt1]:
+            #     continue
+            # else:
+            #     graph[key].append(neighbour)
+            graph[key].append(neighbour)
 
 
-def minimum_distance(x, y):
+def minimum_distance(coords, graph):
+    pq = []
+    mst = []
+    dist = [[INFINITY, pt] for pt in coords]
+    parent =[None for i in range(len(coords))]
+    start = 0
     result = 0.
-    #write your code here
-    return result
+
+    dist[start][0] = 0
+    parent[start] = coords[start]
+    heapq.heappush(pq, dist[start])
+
+    while pq:
+        u_dist, u_pt = heapq.heappop(pq)
+        u_ind = coords.index(u_pt)
+        if parent[u_ind] != coords[u_ind]:
+            mst.append(coords[u_ind])
+            
+        for neighbour_pt, edge_weight in graph[u_pt]:
+            dist_standard = [edge_weight, neighbour_pt]
+            neighbour_ind = coords.index(neighbour_pt)
+
+            print("This is what is in pq: ", pq)
+            print("dist_standard: ", dist_standard)
+            print("In mst: ", mst)
+            print("dist_standard in pq: ", dist_standard in pq)
+            print()
+            print("----------------------------------------------------")
+            if dist_standard in pq and dist[neighbour_ind][0] > edge_weight:
+                remove_dist = dist[neighbour_ind]
+                dist[neighbour_ind][0] = edge_weight
+                parent[neighbour_ind] = coords[u_ind]
+                pq.remove(remove_dist)
+                heapq.heapify(pq)
+                heapq.heappush(pq, dist[neighbour_ind])
+            elif parent[neighbour_ind] is None:
+                dist[neighbour_ind][0] = edge_weight
+                parent[neighbour_ind] = coords[u_ind]
+                heapq.heappush(pq, dist[neighbour_ind])
+                
+    return mst
 
 
 if __name__ == '__main__':
@@ -59,4 +100,5 @@ if __name__ == '__main__':
     for my_pt in coords:
         add_edge(graph, my_pt)
 
-    # print("{0:.9f}".format(minimum_distance(x, y)))
+    # print("{0:.9f}".format(minimum_distance(coords, graph)))
+    print((minimum_distance(coords, graph)))
