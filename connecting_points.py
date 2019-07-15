@@ -7,6 +7,30 @@ import heapq
 INFINITY = 9999.999999999
 
 
+class priority_queue():
+    def __init__(self):
+        self.queue = list()
+        heapq.heapify(self.queue)
+        self.index = dict()
+
+    def push(self, priority, label):
+        if label in self.index:
+            self.queue = [(w, l) for w, l in self.queue if l !=label]
+            heapq.heapify(self.queue)
+        heapq.heappush(self.queue, (priority, label))
+        self.index[label] = priority
+
+    def pop(self):
+        if self.queue:
+            return heapq.heappop(self.queue)
+
+    def __contains__(self, label):
+        return label in self.index
+
+    def __len__(self):
+        return len(self.queue)
+
+
 def distance(p, q):
     """Return euclidean distance btween two points. """
     dist = ((p[0] - q[0])**2 + (p[1] - q[1])**2)
@@ -31,37 +55,32 @@ def add_edge(graph, pt1):
 
 
 def minimum_distance(coords, graph):
-    mst = [None for i in range(len(coords))]
-    length = len(coords)
-    result_vals = [None for i in range(len(coords))]
-    pq = []
-    dist = [[INFINITY, pt] for pt in coords]
-    parent = [None for i in range(len(coords))]
+    """Return the total weights of minimum soan tree using prim's algorithm.
+
+    Parameters
+    ----------
+    coords - list
+        List of tuples (x, y) which are poinys for each vertex
+
+    graph - dict
+        dictionary that stores unweighted graph of all points
+    """
+
+    span_tree = {}
+    pq = priority_queue()
+    result = 0
     start = 0
-    result = 0.
-    dist[start][0] = 0
-    parent[start] = start
-    heapq.heappush(pq, dist[start])
-    i = 1
+    source_vert = coords[start]
+    pq.push(0, (source_vert, source_vert))
 
     while pq:
-        mst_dist, mst_vertex = heapq.heappop(pq)
-        mst_ind = coords.index(mst_vertex)
-        
-        # put this value in our mst
-        mst[mst_ind] = mst_vertex
-        result_vals[mst_ind] = mst_dist
-        
-        for neighbor_vert, edge_weight in graph[mst_vertex]:
-            neighbor_index = coords.index(neighbor_vert)
-            if mst[neighbor_index] != neighbor_vert and dist[neighbor_index][0] > edge_weight:
-                dist[neighbor_index][0] = edge_weight
-                if dist[neighbor_index] not in pq:
-                    parent[neighbor_index] = mst_ind
-                    heapq.heappush(pq, dist[neighbor_index])
-        if mst_vertex in mst and i <= length:
-            result += mst_dist
-        i = i + 1
+        weight, (start_node, end_node) = pq.pop()
+        if end_node not in span_tree:
+            span_tree[end_node] = start_node
+            if weight:
+                result += weight
+            for neighbor_node, weight in graph[end_node]:
+                pq.push(weight, (end_node, neighbor_node))
     return result
 
 
@@ -89,3 +108,4 @@ if __name__ == '__main__':
         add_edge(graph, my_pt)
 
     print("{0:.9f}".format(minimum_distance(coords, graph)))
+    
