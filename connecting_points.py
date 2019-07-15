@@ -27,15 +27,12 @@ def add_edge(graph, pt1):
             edge_weight = distance(key, pt1)
             neighbour = [pt1, edge_weight]
             opp_neighbour = [key, edge_weight]
-            # if opp_neighbour in graph[pt1]:
-            #     continue
-            # else:
-            #     graph[key].append(neighbour)
             graph[key].append(neighbour)
 
 
 def minimum_distance(coords, graph):
     mst = [None for i in range(len(coords))]
+    length = len(coords)
     result_vals = [None for i in range(len(coords))]
     pq = []
     dist = [[INFINITY, pt] for pt in coords]
@@ -45,6 +42,7 @@ def minimum_distance(coords, graph):
     dist[start][0] = 0
     parent[start] = start
     heapq.heappush(pq, dist[start])
+    i = 1
 
     while pq:
         mst_dist, mst_vertex = heapq.heappop(pq)
@@ -53,13 +51,17 @@ def minimum_distance(coords, graph):
         # put this value in our mst
         mst[mst_ind] = mst_vertex
         result_vals[mst_ind] = mst_dist
+        
         for neighbor_vert, edge_weight in graph[mst_vertex]:
             neighbor_index = coords.index(neighbor_vert)
             if mst[neighbor_index] != neighbor_vert and dist[neighbor_index][0] > edge_weight:
                 dist[neighbor_index][0] = edge_weight
-                parent[neighbor_index] = mst_ind
-                heapq.heappush(pq, dist[neighbor_index])
-    result = sum(result_vals)
+                if dist[neighbor_index] not in pq:
+                    parent[neighbor_index] = mst_ind
+                    heapq.heappush(pq, dist[neighbor_index])
+        if mst_vertex in mst and i <= length:
+            result += mst_dist
+        i = i + 1
     return result
 
 
