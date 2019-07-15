@@ -4,8 +4,6 @@ import math
 import heapq
 
 
-INFINITY = 9999.999999999
-
 
 class priority_queue():
     def __init__(self):
@@ -74,13 +72,13 @@ def minimum_distance(coords, graph):
     pq.push(0, (source_vert, source_vert))
 
     while pq:
-        weight, (start_node, end_node) = pq.pop()
+        edge_weight, (start_node, end_node) = pq.pop()
         if end_node not in span_tree:
             span_tree[end_node] = start_node
-            if weight:
-                result += weight
-            for neighbor_node, weight in graph[end_node]:
-                pq.push(weight, (end_node, neighbor_node))
+            if edge_weight:
+                result += edge_weight
+            for neighbor_node, neighbor_weight in graph[end_node]:
+                pq.push(neighbor_weight, (end_node, neighbor_node))
     return result
 
 
